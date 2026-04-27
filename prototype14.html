@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VolunteerFlow - Smart Volunteer Coordination</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f0;
+            color: #1a2e1a;
+        }
+
+        .header {
+            background: #2d6a4f;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .heatmap {
+            background: #e8f0e8;
+            border-radius: 16px;
+            padding: 15px;
+        }
+
+        .neighborhood-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .neighborhood {
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .neighborhood.urgent {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+        }
+
+        .neighborhood.high {
+            background: #ffedd5;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .neighborhood.medium {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .urgency-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .task-list {
+            margin: 15px 0;
+        }
+
+        .task-item {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .task-item:hover {
+            background: #e5e7eb;
+        }
+
+        .volunteer-card {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge-urgent {
+            background: #dc2626;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .badge-skill {
+            background: #2d6a4f;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+        }
+
+        .btn-match {
+            background: #2d6a4f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status-success {
+            background: #d1fae5;
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            color: #2d6a4f;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🤝 VolunteerFlow</h2>
+        <p>Data-driven volunteer coordination for social impact</p>
+    </div>
+    <div class="container">
+        <div class="two-col">
+            <!-- Left: Community Needs & Urgency Map -->
+            <div class="card">
+                <h3>📍 Community Urgency Map</h3>
+                <div class="heatmap">
+                    <div class="neighborhood-grid">
+                        <div class="neighborhood urgent" onclick="selectNeighborhood('Northside')">
+                            <div>🏘️ Northside</div>
+                            <div class="urgency-score">96</div>
+                            <div style="font-size: 0.7rem;">URGENT</div>
+                        </div>
+                        <div class="neighborhood high" onclick="selectNeighborhood('Eastside')">
+                            <div>🏘️ Eastside</div>
+                            <div class="urgency-score">84</div>
+                            <div style="font-size: 0.7rem;">HIGH NEED</div>
+                        </div>
+                        <div class="neighborhood high" onclick="selectNeighborhood('West End')">
+                            <div>🏘️ West End</div>
+                            <div class="urgency-score">78</div>
+                            <div style="font-size: 0.7rem;">HIGH NEED</div>
+                        </div>
+                        <div class="neighborhood medium" onclick="selectNeighborhood('Downtown')">
+                            <div>🏘️ Downtown</div>
+                            <div class="urgency-score">52</div>
+                            <div style="font-size: 0.7rem;">MODERATE</div>
+                        </div>
+                        <div class="neighborhood urgent" onclick="selectNeighborhood('Southside')">
+                            <div>🏘️ Southside</div>
+                            <div class="urgency-score">91</div>
+                            <div style="font-size: 0.7rem;">URGENT</div>
+                        </div>
+                        <div class="neighborhood medium" onclick="selectNeighborhood('Riverside')">
+                            <div>🏘️ Riverside</div>
+                            <div class="urgency-score">45</div>
+                            <div style="font-size: 0.7rem;">MODERATE</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="selectedAreaMsg" style="margin-top: 10px; font-size: 0.8rem; color: #555;">Click any neighborhood to view tasks</div>
+            </div>
+
+            <!-- Right: Active Tasks & Volunteer Matching -->
+            <div class="card">
+                <h3>📋 Urgent Tasks (Needs Matching)</h3>
+                <div class="task-list" id="taskList">
+                    <div class="task-item" data-task="1" data-area="Northside" data-skill="food">
+                        <div><strong>🍲 Food delivery</strong><br>Northside - 3 families, expires in 2hr</div>
+                        <span class="badge-urgent">URGENT</span>
+                    </div>
+                    <div class="task-item" data-task="2" data-area="Southside" data-skill="medical">
+                        <div><strong>💊 Prescription pickup</strong><br>Southside - elderly homebound, today only</div>
+                        <span class="badge-urgent">URGENT</span>
+                    </div>
+                    <div class="task-item" data-task="3" data-area="Eastside" data-skill="tutoring">
+                        <div><strong>📚 Tutoring session</strong><br>Eastside - 4 students, tomorrow 3pm</div>
+                        <span class="badge-urgent">HIGH</span>
+                    </div>
+                    <div class="task-item" data-task="4" data-area="West End" data-skill="transport">
+                        <div><strong>🚗 Medical transport</strong><br>West End - dialysis appointment, 8am tomorrow</div>
+                        <span>MEDIUM</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 20px;">👥 Available Volunteers</h3>
+                <div id="volunteerList">
+                    <div class="volunteer-card">
+                        <div><strong>Maria</strong> (0.3 mi) - Food delivery, Driving</div>
+                        <span class="badge-skill">Available now</span>
+                    </div>
+                    <div class="volunteer-card">
+                        <div><strong>James</strong> (1.2 mi) - Tutoring, Tech support</div>
+                        <span class="badge-skill">Available 2pm-6pm</span>
+                    </div>
+                    <div class="volunteer-card">
+                        <div><strong>Dr. Patel</strong> (0.8 mi) - Medical, Prescription aid</div>
+                        <span class="badge-skill">On-call</span>
+                    </div>
+                    <div class="volunteer-card">
+                        <div><strong>Carlos</strong> (2.1 mi) - Transport, Heavy lifting</div>
+                        <span class="badge-skill">Available tomorrow</span>
+                    </div>
+                </div>
+
+                <button class="btn-match" onclick="autoMatch()">⚡ SMART MATCH (AI-Powered)</button>
+                <div id="matchResult" class="status-success" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Stats row -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 25px;">
+            <div class="card" style="text-align: center;"><div style="font-size: 2rem; font-weight: bold;">14</div><div>Active Volunteers</div></div>
+            <div class="card" style="text-align: center;"><div style="font-size: 2rem; font-weight: bold;">23</div><div>Open Tasks</div></div>
+            <div class="card" style="text-align: center;"><div style="font-size: 2rem; font-weight: bold;">92%</div><div>Match Rate</div></div>
+            <div class="card" style="text-align: center;"><div style="font-size: 2rem; font-weight: bold;">47</div><div>People Helped (this week)</div></div>
+        </div>
+    </div>
+
+    <script>
+        function selectNeighborhood(area) {
+            document.getElementById('selectedAreaMsg').innerHTML = `📍 Selected: ${area}. Showing tasks in this area...`;
+            
+            const tasks = document.querySelectorAll('.task-item');
+            tasks.forEach(task => {
+                const taskArea = task.getAttribute('data-area');
+                if (taskArea === area) {
+                    task.style.display = 'flex';
+                    task.style.background = '#fef3c7';
+                } else {
+                    task.style.display = 'none';
+                }
+            });
+        }
+
+        function autoMatch() {
+            const resultDiv = document.getElementById('matchResult');
+            
+            // Simulate AI matching logic
+            const matches = [
+                "✓ Maria assigned to Food delivery (Northside) - 0.3 miles, skills match: 98%",
+                "✓ Dr. Patel assigned to Prescription pickup (Southside) - medical expertise match",
+                "✓ James assigned to Tutoring (Eastside) - available at requested time"
+            ];
+            
+            resultDiv.innerHTML = matches.join('<br>');
+            resultDiv.style.display = 'block';
+            
+            // Remove matched tasks from list
+            const tasksToRemove = document.querySelectorAll('.task-item');
+            if (tasksToRemove.length >= 3) {
+                tasksToRemove[0].remove();
+                tasksToRemove[1].remove();
+                tasksToRemove[2].remove();
+            }
+            
+            // Update volunteer status
+            const volunteers = document.querySelectorAll('.volunteer-card');
+            if (volunteers[0]) volunteers[0].querySelector('span').innerHTML = 'Assigned ✅';
+            if (volunteers[2]) volunteers[2].querySelector('span').innerHTML = 'Assigned ✅';
+        }
+
+        // Reset task display on page load
+        document.querySelectorAll('.task-item').forEach(task => {
+            task.addEventListener('click', function() {
+                alert(`Task: ${this.innerText.split('\n')[0]}\nClick "Smart Match" to assign a volunteer.`);
+            });
+        });
+    </script>
+</body>
+</html>
